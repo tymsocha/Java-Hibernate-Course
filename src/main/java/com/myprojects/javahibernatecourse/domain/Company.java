@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "company")
@@ -36,6 +38,12 @@ public class Company {
     @JoinColumn(name = "id_company_detail")
     private CompanyDetail companyDetail;
 
+    @OneToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH},
+            mappedBy = "company"
+    )
+    private List<Property> propertyList;
+
     public Company(String name, Integer value) {
         this.name = name;
         this.value = value;
@@ -48,5 +56,13 @@ public class Company {
                 ", name='" + name + '\'' +
                 ", value=" + value +
                 '}';
+    }
+
+    public void addProperty(Property property) {
+        if (this.propertyList == null) {
+            this.propertyList = new ArrayList<>();
+        }
+        this.propertyList.add(property);
+        property.setCompany(this);
     }
 }
